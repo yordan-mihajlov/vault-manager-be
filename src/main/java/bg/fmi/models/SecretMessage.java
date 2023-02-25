@@ -48,6 +48,12 @@ public class SecretMessage extends AuditableEntity {
     private Boolean isOneTime;
 
     @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "secret_massage_hidden_for_users",
+            joinColumns = @JoinColumn(name = "secret_massage_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id"))
+    private List<User> hiddenFor;
+
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "secret_massage_read_by_users",
             joinColumns = @JoinColumn(name = "secret_massage_id"),
             inverseJoinColumns = @JoinColumn(name = "user_id"))
@@ -58,6 +64,7 @@ public class SecretMessage extends AuditableEntity {
             joinColumns = @JoinColumn(name = "secret_massage_id"),
             inverseJoinColumns = @JoinColumn(name = "user_id"))
     private List<User> toUsers;
+
 
     @NotNull
     private Boolean isPublic;

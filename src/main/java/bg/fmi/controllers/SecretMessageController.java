@@ -3,6 +3,7 @@ package bg.fmi.controllers;
 import bg.fmi.payload.request.SecretMessageRequest;
 import bg.fmi.payload.response.SecretMessageResponse;
 import bg.fmi.payload.response.UnreadSecretMessageResponse;
+import bg.fmi.payload.response.UnreadSecretMessagesCountResponse;
 import bg.fmi.services.SecretMessageService;
 import bg.fmi.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,9 +27,9 @@ public class SecretMessageController {
     private UserService userService;
 
     @PostMapping("/create-secret")
-    public ResponseEntity<String> create(@Valid @RequestBody SecretMessageRequest secretMessageRequest) {
-
-        return ResponseEntity.ok(secretMessageService.create(secretMessageRequest));
+    public ResponseEntity<Void> create(@Valid @RequestBody SecretMessageRequest secretMessageRequest) {
+        secretMessageService.create(secretMessageRequest);
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/get-secret")
@@ -41,5 +42,11 @@ public class SecretMessageController {
     public ResponseEntity<List<UnreadSecretMessageResponse>> getUnreadSecrets() {
 
         return ResponseEntity.ok(secretMessageService.getUnreadSecrets(userService.getUser()));
+    }
+
+    @GetMapping("/unread-secrets-count")
+    public ResponseEntity<UnreadSecretMessagesCountResponse> getUnreadSecretsCount() {
+
+        return ResponseEntity.ok(secretMessageService.getUnreadSecretsCount(userService.getUser()));
     }
 }

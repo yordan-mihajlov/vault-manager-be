@@ -29,9 +29,9 @@ public class UserControllerTest {
     public void testMarkUserAsAdmin() {
         String username = "johndoe";
 
-        userController.markUserAsAdmin(username);
+        userController.markUsersAsAdmins(List.of(username));
 
-        verify(userService, times(1)).markUserAsAdmin(username);
+        verify(userService, times(1)).markUsersAsAdmins(List.of(username));
     }
 
     @Test

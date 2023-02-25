@@ -114,6 +114,22 @@ public class ProjectService {
                 owner.getUsername(), users, usersRequest.getProjectName()));
     }
 
+    public void changeUsers(UsersRequest usersRequest, User owner) {
+        Project project = projectRepository.findByNameAndOwner(usersRequest.getProjectName(), owner)
+                .orElseThrow(NoDataFoundException::new);
+
+        List<User> dbUsers = userRepository.findByUsernameIn(usersRequest.getUserNames());
+        dbUsers.add(owner);
+
+        project.setUsers(new HashSet<>(dbUsers));
+        projectRepository.save(project);
+
+        final String users = dbUsers.stream().map(User::getUsername)
+                .collect(joining(") (", "(", ")"));
+        log.info(String.format("User %s change %s to project %s",
+                owner.getUsername(), users, usersRequest.getProjectName()));
+    }
+
     public void removeUsers(UsersRequest usersRequest, User owner) {
         Project project = projectRepository.findByNameAndOwner(usersRequest.getProjectName(), owner)
                 .orElseThrow(NoDataFoundException::new);

@@ -67,6 +67,15 @@ public class ProjectController {
         return ResponseEntity.ok().build();
     }
 
+    @PostMapping("/change-users")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Void> changeUsers(@Valid @RequestBody UsersRequest usersRequest) {
+
+        projectService.changeUsers(usersRequest, userService.getUser());
+
+        return ResponseEntity.ok().build();
+    }
+
     @PostMapping("/remove-users")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> removeUsers(@Valid @RequestBody UsersRequest usersRequest) {
@@ -77,14 +86,14 @@ public class ProjectController {
     }
 
     @GetMapping("/get-configs")
-    @PreAuthorize("hasRole('USER') or hasRole('ADMIN') or hasRole('APP')")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN') or hasRole('SYSTEM')")
     public ResponseEntity<ProjectResponse> getConfigs(@NotBlank @Param("projectName") String projectName) {
 
         return ResponseEntity.ok(projectService.getConfiguration(projectName, userService.getUser()));
     }
 
     @GetMapping("/get-all-configs")
-    @PreAuthorize("hasRole('USER') or hasRole('ADMIN') or hasRole('APP')")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     public ResponseEntity<List<ProjectResponse>> getAllConfigs() {
         List<ProjectResponse> projectResponses = new ArrayList<>();
 

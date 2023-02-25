@@ -35,10 +35,9 @@ class SecretMessageControllerTest {
         SecretMessageRequest secretMessageRequest = new SecretMessageRequest();
         when(secretMessageService.create(secretMessageRequest)).thenReturn("12345");
 
-        ResponseEntity<String> response = secretMessageController.create(secretMessageRequest);
+        ResponseEntity<Void> response = secretMessageController.create(secretMessageRequest);
 
         assertThat(response.getStatusCodeValue()).isEqualTo(200);
-        assertThat(response.getBody()).isEqualTo("12345");
     }
 
     @Test

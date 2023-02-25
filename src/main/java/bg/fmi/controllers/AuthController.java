@@ -79,7 +79,9 @@ public class AuthController {
     return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
         .body(new UserInfoResponse(userDetails.getId(),
                                    userDetails.getUsername(),
-                                   userDetails.getEmail(),
+                                   null,
+                                   null,
+                                   null,
                                    roles));
   }
 
@@ -154,17 +156,17 @@ public class AuthController {
     return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
             .body(new UserInfoResponse(user.getId(),
                     user.getUsername(),
-                    user.getEmail(),
+                    null, null, null,
                    user.getRoles().stream().map(role -> role.getName().name()).collect(Collectors.toList())));
   }
 
   @PostMapping("/signout")
-  public ResponseEntity<Void> logoutUser() {
+  public ResponseEntity<UserInfoResponse> logoutUser() {
     ResponseCookie cookie = jwtUtils.getCleanJwtCookie();
 
     log.info(String.format("User %s has been successfully logged out", getUsername()));
 
-    return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, cookie.toString()).build();
+    return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, cookie.toString()).body(new UserInfoResponse());
   }
 
   private String getUsername() {

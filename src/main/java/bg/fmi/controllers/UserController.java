@@ -1,6 +1,8 @@
 package bg.fmi.controllers;
 
 import bg.fmi.models.ERole;
+import bg.fmi.models.User;
+import bg.fmi.payload.response.UserInfoResponse;
 import bg.fmi.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.query.Param;
@@ -21,16 +23,16 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @GetMapping("/mark-user-as-admin")
+    @GetMapping("/mark-users-as-admins")
     @PreAuthorize("hasRole('MODERATOR')")
-    public ResponseEntity<Void> markUserAsAdmin(@NotBlank @Param("username") String username) {
-        userService.markUserAsAdmin(username);
+    public ResponseEntity<Void> markUsersAsAdmins(@NotBlank @Param("username") List<String> usernames) {
+        userService.markUsersAsAdmins(usernames);
 
         return ResponseEntity.ok().build();
     }
 
     @GetMapping("/usernames")
-    @PreAuthorize("hasRole('MODERATOR') or hasRole('ADMIN')")
+    @PreAuthorize("hasRole('MODERATOR') or hasRole('ADMIN') or hasRole('USER')")
     public ResponseEntity<List<String>> getUsernames() {
         List<String> usernames = userService.getUsernames();
 
@@ -43,5 +45,13 @@ public class UserController {
         List<String> usernames = userService.getUsernames(Set.of(roles));
 
         return ResponseEntity.ok(usernames);
+    }
+
+    @GetMapping("/user-details")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    public ResponseEntity<UserInfoResponse> getUserDetails() {
+        User user = userService.getUser();
+
+        return ResponseEntity.ok(userService.getUserDetails());
     }
 }

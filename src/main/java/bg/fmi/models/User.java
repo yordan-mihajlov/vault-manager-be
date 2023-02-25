@@ -2,6 +2,7 @@ package bg.fmi.models;
 
 import bg.fmi.auditing.AuditableEntity;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -14,6 +15,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
 @Data
+@Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
@@ -30,6 +32,14 @@ public class User extends AuditableEntity {
   @NotBlank
   @Size(max = 20)
   private String username;
+
+  @NotBlank
+  @Size(max = 20)
+  private String firstname;
+
+  @NotBlank
+  @Size(max = 20)
+  private String lastname;
 
   @NotBlank
   @Size(max = 50)

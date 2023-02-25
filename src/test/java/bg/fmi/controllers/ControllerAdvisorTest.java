@@ -72,7 +72,7 @@ public class ControllerAdvisorTest {
         Map<String, Object> body = response.getBody();
 
         assertNotNull(response);
-        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
         assertEquals("There is already such kind of resource", body.get("message"));
         assertEquals(LocalDateTime.class, body.get("timestamp").getClass());
     }

@@ -12,4 +12,5 @@ public class UnreadSecretMessageResponse {
     private String uuid;
     private Boolean isOneTime;
     private LocalDateTime expireDate;
+    private boolean isNew;
 }

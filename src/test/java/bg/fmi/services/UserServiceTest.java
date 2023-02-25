@@ -9,7 +9,6 @@ import java.util.*;
 import bg.fmi.models.ERole;
 import bg.fmi.models.Role;
 import bg.fmi.models.User;
-import bg.fmi.repository.ProjectRepository;
 import bg.fmi.repository.RoleRepository;
 import bg.fmi.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -72,15 +71,15 @@ class UserServiceTest {
 
     @Test
     void testMarkUserAsAdmin() {
-        when(userRepository.findByUsername(username)).thenReturn(Optional.of(user));
+        when(userRepository.findByUsernameIn(List.of(username))).thenReturn(List.of(user));
         when(roleRepository.findByName(ERole.ROLE_ADMIN)).thenReturn(Optional.of(role));
 
-        userService.markUserAsAdmin(username);
+        userService.markUsersAsAdmins(List.of(username));
 
         assertEquals(ERole.ROLE_USER, user.getRoles().iterator().next().getName());
-        verify(userRepository, times(1)).findByUsername(username);
+        verify(userRepository, times(1)).findByUsernameIn(any());
         verify(roleRepository, times(1)).findByName(ERole.ROLE_ADMIN);
-        verify(userRepository, times(1)).save(user);
+        verify(userRepository, times(1)).saveAll(any());
     }
 
     @Test
@@ -88,6 +87,9 @@ class UserServiceTest {
         // Given
         Role adminRole = new Role();
         adminRole.setName(ERole.ROLE_ADMIN);
+
+        Role userRole = new Role();
+        userRole.setName(ERole.ROLE_ADMIN);
 
         User user1 = new User();
         user1.setUsername("user1");
@@ -98,7 +100,8 @@ class UserServiceTest {
         user2.setRoles(Set.of(adminRole));
 
         when(roleRepository.findByName(ERole.ROLE_ADMIN)).thenReturn(Optional.of(adminRole));
-        when(userRepository.findByRolesIn(Set.of(adminRole))).thenReturn(List.of(user1, user2));
+        when(roleRepository.findByName(ERole.ROLE_USER)).thenReturn(Optional.of(userRole));
+        when(userRepository.findByRolesIn(any())).thenReturn(List.of(user1, user2));
 
         // When
         List<String> usernames = userService.getUsernames();
@@ -113,8 +116,12 @@ class UserServiceTest {
         Role adminRole = new Role();
         adminRole.setName(ERole.ROLE_ADMIN);
 
+        Role userRole = new Role();
+        userRole.setName(ERole.ROLE_ADMIN);
+
         when(roleRepository.findByName(ERole.ROLE_ADMIN)).thenReturn(Optional.of(adminRole));
-        when(userRepository.findByRolesIn(Set.of(adminRole))).thenReturn(Collections.emptyList());
+        when(roleRepository.findByName(ERole.ROLE_USER)).thenReturn(Optional.of(userRole));
+        when(userRepository.findByRolesIn(any())).thenReturn(Collections.emptyList());
 
         // When
         List<String> usernames = userService.getUsernames();
@@ -127,6 +134,7 @@ class UserServiceTest {
     public void testGetUsernames_whenNoUsersExist_thenReturnEmptyList() {
         // given
         when(roleRepository.findByName(ERole.ROLE_ADMIN)).thenReturn(Optional.of(new Role(1, ERole.ROLE_ADMIN)));
+        when(roleRepository.findByName(ERole.ROLE_USER)).thenReturn(Optional.of(new Role(2, ERole.ROLE_USER)));
         when(userRepository.findByRolesIn(Collections.singleton(new Role(1, ERole.ROLE_ADMIN)))).thenReturn(Collections.emptyList());
 
         // when
@@ -139,11 +147,13 @@ class UserServiceTest {
     @Test
     public void testGetUsernames_whenUsersExist_thenReturnUsernames() {
         // given
-        Role role = new Role(1, ERole.ROLE_ADMIN);
-        User user1 = new User(1L, "username1", "email", "password", Collections.singleton(role));
-        User user2 = new User(2L, "username2", "email", "password", Collections.singleton(role));
-        when(roleRepository.findByName(ERole.ROLE_ADMIN)).thenReturn(Optional.of(role));
-        when(userRepository.findByRolesIn(Collections.singleton(role))).thenReturn(Arrays.asList(user1, user2));
+        Role role1 = new Role(1, ERole.ROLE_ADMIN);
+        Role role2 = new Role(2, ERole.ROLE_USER);
+        User user1 = new User(1L, "username1", "email", null, null,  "password", Collections.singleton(role1));
+        User user2 = new User(2L, "username2", "email", null, null, "password", Collections.singleton(role2));
+        when(roleRepository.findByName(ERole.ROLE_ADMIN)).thenReturn(Optional.of(role1));
+        when(roleRepository.findByName(ERole.ROLE_USER)).thenReturn(Optional.of(role2));
+        when(userRepository.findByRolesIn(any())).thenReturn(Arrays.asList(user1, user2));
 
         // when
         List<String> usernames = userService.getUsernames();

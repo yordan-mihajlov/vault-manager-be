@@ -2,6 +2,7 @@ package bg.fmi.services;
 
 import bg.fmi.exceptions.NoDataFoundException;
 import bg.fmi.models.*;
+import bg.fmi.payload.response.UserInfoResponse;
 import bg.fmi.repository.ProjectRepository;
 import bg.fmi.repository.RoleRepository;
 import bg.fmi.repository.UserRepository;
@@ -37,24 +38,43 @@ public class UserService {
         return userRepository.findByUsername(username).orElseThrow(NoDataFoundException::new);
     }
 
-    public void markUserAsAdmin(String username) {
-        User dbUser = userRepository.findByUsername(username).orElseThrow(NoDataFoundException::new);
+    public UserInfoResponse getUserDetails() {
+        User user = getUser();
+
+        return UserInfoResponse.builder()
+                .username(user.getUsername())
+                .email(user.getEmail())
+                .firstname(user.getFirstname())
+                .lastname(user.getLastname())
+                .roles((user.getRoles().stream().map(role -> role.getName().name()).collect(Collectors.toList())))
+                .build();
+    }
+
+    public void markUsersAsAdmins(List<String> usernames) {
+        List<User> dbUsers = userRepository.findByUsernameIn(usernames);
         Set<Role> roles = new HashSet<>();
         roles.add(roleRepository.findByName(ERole.ROLE_ADMIN).get());
-        dbUser.setRoles(roles);
-        userRepository.save(dbUser);
+        dbUsers.forEach(user -> user.setRoles(roles));
+        userRepository.saveAll(dbUsers);
 
-        log.info(String.format("User %s was marked as admin", username));
+        log.info(String.format("Users %s was marked as admin", usernames));
     }
 
     public List<String> getUsernames() {
         Set<Role> roles = new HashSet<>();
+        roles.add(roleRepository.findByName(ERole.ROLE_USER).get());
         roles.add(roleRepository.findByName(ERole.ROLE_ADMIN).get());
-        return userRepository.findByRolesIn(roles).stream().map(User::getUsername).collect(Collectors.toList());
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return userRepository.findByRolesIn(roles).stream().map(User::getUsername)
+                .filter(username -> !username.equals(authentication.getName())).collect(Collectors.toList());
     }
 
     public List<String> getUsernames(Set<ERole> eRoles) {
         Set<Role> roles = roleRepository.findByNameIn(eRoles);
-        return userRepository.findByRolesIn(roles).stream().map(User::getUsername).collect(Collectors.toList());
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return userRepository.findByRolesIn(roles).stream().map(User::getUsername)
+                .filter(username -> !username.equals(authentication.getName())).collect(Collectors.toList());
     }
 }
