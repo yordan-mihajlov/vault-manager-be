@@ -71,12 +71,18 @@
 			<artifactId>spring-security-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>com.opencsv</groupId>
+			<artifactId>opencsv</artifactId>
+			<version>5.7.1</version>
+		</dependency>
 
 		<dependency>
 			<groupId>bg.fmi</groupId>
 			<artifactId>vault-manager-client</artifactId>
 			<version>1.0</version>
 		</dependency>
+
 	</dependencies>
 
 	<build>

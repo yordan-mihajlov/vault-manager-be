@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Set;
 
 import bg.fmi.models.ERole;
+import bg.fmi.payload.request.MarkUsersAsAdminsRequest;
 import bg.fmi.services.UserService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -28,8 +29,10 @@ public class UserControllerTest {
     @Test
     public void testMarkUserAsAdmin() {
         String username = "johndoe";
+        MarkUsersAsAdminsRequest markUsersAsAdminsRequest = new MarkUsersAsAdminsRequest();
+        markUsersAsAdminsRequest.setUsernames(List.of(username));
 
-        userController.markUsersAsAdmins(List.of(username));
+        userController.markUsersAsAdmins(markUsersAsAdminsRequest);
 
         verify(userService, times(1)).markUsersAsAdmins(List.of(username));
     }
@@ -48,10 +51,10 @@ public class UserControllerTest {
     @Test
     public void testGetUsernamesByRoles() {
         List<String> usernames = Arrays.asList("johndoe", "janedoe");
-        Set<ERole> roles = Set.of(ERole.ROLE_ADMIN, ERole.ROLE_USER);
-        when(userService.getUsernames(roles)).thenReturn(usernames);
+        ERole role = ERole.ROLE_ADMIN;
+        when(userService.getUsernames(role)).thenReturn(usernames);
 
-        ResponseEntity<List<String>> response = userController.getUsernamesByRoles(roles.toArray(new ERole[roles.size()]));
+        ResponseEntity<List<String>> response = userController.getUsernamesByRoles(role);
 
         assertEquals(usernames, response.getBody());
         assertEquals(200, response.getStatusCodeValue());

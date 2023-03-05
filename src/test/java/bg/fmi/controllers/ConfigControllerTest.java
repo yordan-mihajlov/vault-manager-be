@@ -2,10 +2,10 @@ package bg.fmi.controllers;
 
 import bg.fmi.models.User;
 import bg.fmi.payload.request.ConfigsRequest;
-import bg.fmi.payload.request.ProjectRequest;
+import bg.fmi.payload.request.SystemConfigurationRequest;
 import bg.fmi.payload.request.UsersRequest;
-import bg.fmi.payload.response.ProjectResponse;
-import bg.fmi.services.ProjectService;
+import bg.fmi.payload.response.ConfigResponse;
+import bg.fmi.services.ConfigService;
 import bg.fmi.services.UserService;
 import bg.fmi.vaultmanagerclient.component.VaultManagerProvider;
 import org.junit.jupiter.api.Test;
@@ -28,10 +28,10 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-public class ProjectControllerTest {
+public class ConfigControllerTest {
 
     @Mock
-    private ProjectService projectService;
+    private ConfigService configService;
 
     @Mock
     private UserService userService;
@@ -39,46 +39,46 @@ public class ProjectControllerTest {
     private VaultManagerProvider vaultManagerProvider;
 
     @InjectMocks
-    private ProjectController projectController;
+    private ConfigController configController;
 
 
     @Test
     public void testGetAll() {
-        Set<ProjectResponse> projectResponses = new HashSet<>();
-        when(projectService.getAll(any())).thenReturn(projectResponses);
+        Set<ConfigResponse> projectConfigRespons = new HashSet<>();
+        when(configService.getAll(any())).thenReturn(projectConfigRespons);
         when(userService.getUser()).thenReturn(new User());
 
-        ResponseEntity<Set<ProjectResponse>> response = projectController.getAll();
+        ResponseEntity<Set<ConfigResponse>> response = configController.getAll();
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(projectResponses, response.getBody());
-        verify(projectService).getAll(any());
+        assertEquals(projectConfigRespons, response.getBody());
+        verify(configService).getAll(any());
         verify(userService).getUser();
     }
 
     @Test
     public void testCreate() {
-        ProjectRequest project = new ProjectRequest("Test Project", "Test Description");
+        SystemConfigurationRequest config = new SystemConfigurationRequest("Test SystemConfiguration", "Test Description");
         User user = new User();
         when(userService.getUser()).thenReturn(user);
 
-        ResponseEntity<Void> response = projectController.create(project);
+        ResponseEntity<Void> response = configController.create(config);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        verify(projectService).create(project, user);
+        verify(configService).create(config, user);
         verify(userService).getUser();
     }
 
     @Test
     void testDeleteSuccess() {
-        String projectName = "testProject";
+        String configName = "testConfig";
         User user = new User();
         when(userService.getUser()).thenReturn(user);
 
-        ResponseEntity<Void> response = projectController.delete(projectName);
+        ResponseEntity<Void> response = configController.delete(configName);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        verify(projectService).delete(projectName, user);
+        verify(configService).delete(configName, user);
         verify(userService).getUser();
     }
 
@@ -88,10 +88,10 @@ public class ProjectControllerTest {
         User user = new User();
         when(userService.getUser()).thenReturn(user);
 
-        ResponseEntity<Void> response = projectController.addUsers(usersRequest);
+        ResponseEntity<Void> response = configController.addUsers(usersRequest);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        verify(projectService).addUsers(usersRequest, user);
+        verify(configService).addUsers(usersRequest, user);
         verify(userService).getUser();
     }
 
@@ -101,23 +101,23 @@ public class ProjectControllerTest {
         User user = new User();
         when(userService.getUser()).thenReturn(user);
 
-        ResponseEntity<Void> response = projectController.removeUsers(usersRequest);
+        ResponseEntity<Void> response = configController.removeUsers(usersRequest);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        verify(projectService).removeUsers(usersRequest, user);
+        verify(configService).removeUsers(usersRequest, user);
         verify(userService).getUser();
     }
 
     @Test
     void testGetConfigsSuccess() {
-        String projectName = "testProject";
+        String configName = "testConfig";
         User user = new User();
         when(userService.getUser()).thenReturn(user);
 
-        ResponseEntity<ProjectResponse> response = projectController.getConfigs(projectName);
+        ResponseEntity<ConfigResponse> response = configController.getConfigs(configName);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        verify(projectService).getConfiguration(projectName, user);
+        verify(configService).getConfiguration(configName, user);
         verify(userService).getUser();
     }
 
@@ -127,10 +127,10 @@ public class ProjectControllerTest {
         User user = new User();
         when(userService.getUser()).thenReturn(user);
 
-        ResponseEntity<Void> response = projectController.updateConfigs(configsRequest);
+        ResponseEntity<Void> response = configController.updateConfigs(configsRequest);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        verify(projectService).updateConfigs(configsRequest, user);
+        verify(configService).updateConfigs(configsRequest, user);
         verify(userService).getUser();
     }
 }

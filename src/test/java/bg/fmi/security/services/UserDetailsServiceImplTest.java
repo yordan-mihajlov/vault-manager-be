@@ -28,7 +28,7 @@ public class UserDetailsServiceImplTest {
     @Test
     public void testLoadUserByUsernameWhenUserExistsReturnsUserDetails() {
         // Given
-        User user = new User("username", "email@email.com", "password");
+        User user = new User("username", "email@email.com", "password", "firstname", "lastname");
         Mockito.when(userRepository.findByUsername("username"))
                 .thenReturn(Optional.of(user));
 

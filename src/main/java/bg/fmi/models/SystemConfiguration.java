@@ -16,11 +16,11 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "projects",
+@Table(name = "system_configurations",
         uniqueConstraints = {
                 @UniqueConstraint(columnNames={"name"})
         })
-public class Project extends AuditableEntity {
+public class SystemConfiguration extends AuditableEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -31,12 +31,12 @@ public class Project extends AuditableEntity {
     @NotBlank
     private String description;
 
-    @OneToMany(mappedBy="project", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy="systemConfiguration", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Configuration> configurations;
 
     @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "project_users",
-            joinColumns = @JoinColumn(name = "project_id"),
+    @JoinTable(name = "config_users",
+            joinColumns = @JoinColumn(name = "config_id"),
             inverseJoinColumns = @JoinColumn(name = "user_id"))
     private Set<User> users;
 

@@ -10,6 +10,7 @@ import bg.fmi.models.ERole;
 import bg.fmi.models.Role;
 import bg.fmi.models.User;
 import bg.fmi.payload.request.SignupRequest;
+import bg.fmi.payload.response.RegisterResponse;
 import bg.fmi.repository.RoleRepository;
 import bg.fmi.repository.UserRepository;
 import org.junit.jupiter.api.Test;
@@ -28,7 +29,6 @@ import org.springframework.security.authentication.TestingAuthenticationToken;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import bg.fmi.payload.request.LoginRequest;
-import bg.fmi.payload.response.UserInfoResponse;
 import bg.fmi.security.jwt.JwtUtils;
 import bg.fmi.security.services.UserDetailsImpl;
 import org.springframework.security.core.context.SecurityContext;
@@ -72,7 +72,7 @@ public class AuthControllerTest {
         ResponseCookie jwtCookie = ResponseCookie.from("jwt", "testtoken").build();
         when(jwtUtils.generateJwtCookie("testuser")).thenReturn(jwtCookie);
 
-        ResponseEntity<UserInfoResponse> response = authController.authenticateUser(loginRequest);
+        ResponseEntity<RegisterResponse> response = authController.authenticateUser(loginRequest);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals("testuser", response.getBody().getUsername());
@@ -112,7 +112,7 @@ public class AuthControllerTest {
         user.setEmail(signupRequest.getEmail());
 
         when(userRepository.existsByUsername(signupRequest.getUsername())).thenReturn(true);
-        ResponseEntity<UserInfoResponse> response = authController.registerUser(signupRequest);
+        ResponseEntity<RegisterResponse> response = authController.registerUser(signupRequest);
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
     }
 
@@ -128,7 +128,7 @@ public class AuthControllerTest {
         user.setUsername(signupRequest.getUsername());
         user.setEmail(signupRequest.getEmail());
         when(userRepository.existsByEmail(signupRequest.getEmail())).thenReturn(true);
-        ResponseEntity<UserInfoResponse> response = authController.registerUser(signupRequest);
+        ResponseEntity<RegisterResponse> response = authController.registerUser(signupRequest);
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
     }
 
@@ -144,7 +144,6 @@ public class AuthControllerTest {
         signupRequest.setUsername("testuser");
         signupRequest.setEmail("testuser@example.com");
         signupRequest.setPassword("password");
-        signupRequest.setRole(new HashSet<>(Collections.singleton("ROLE_USER")));
 
         when(userRepository.existsByUsername("testuser")).thenReturn(false);
         when(userRepository.existsByEmail("testuser@example.com")).thenReturn(false);
@@ -162,7 +161,7 @@ public class AuthControllerTest {
 
         when(userRepository.save(any(User.class))).thenReturn(user);
 
-        ResponseEntity<UserInfoResponse> response = authController.registerUser(signupRequest);
+        ResponseEntity<RegisterResponse> response = authController.registerUser(signupRequest);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals("testuser", response.getBody().getUsername());
@@ -180,7 +179,7 @@ public class AuthControllerTest {
         ResponseCookie jwtCookie = ResponseCookie.from("jwt", "testuser").build();
         when(jwtUtils.getCleanJwtCookie()).thenReturn(jwtCookie);
 
-        ResponseEntity<UserInfoResponse> response = authController.logoutUser();
+        ResponseEntity<RegisterResponse> response = authController.logoutUser();
 
         assertEquals(200, response.getStatusCodeValue());
     }*/

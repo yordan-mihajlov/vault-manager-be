@@ -29,6 +29,6 @@ public class Configuration extends AuditableEntity {
     private String value;
 
     @ManyToOne
-    @JoinColumn(name="projectId", referencedColumnName="id", nullable = false)
-    private Project project;
+    @JoinColumn(name="systemConfigurationId", referencedColumnName="id", nullable = false)
+    private SystemConfiguration systemConfiguration;
 }

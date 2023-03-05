@@ -2,8 +2,8 @@ package bg.fmi.services;
 
 import bg.fmi.exceptions.NoDataFoundException;
 import bg.fmi.models.*;
-import bg.fmi.payload.response.UserInfoResponse;
-import bg.fmi.repository.ProjectRepository;
+import bg.fmi.payload.response.RegisterResponse;
+import bg.fmi.repository.SystemConfigurationRepository;
 import bg.fmi.repository.RoleRepository;
 import bg.fmi.repository.UserRepository;
 import org.apache.log4j.Logger;
@@ -29,7 +29,7 @@ public class UserService {
     private RoleRepository roleRepository;
 
     @Autowired
-    private ProjectRepository projectRepository;
+    private SystemConfigurationRepository systemConfigurationRepository;
 
     public User getUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -38,10 +38,10 @@ public class UserService {
         return userRepository.findByUsername(username).orElseThrow(NoDataFoundException::new);
     }
 
-    public UserInfoResponse getUserDetails() {
+    public RegisterResponse getUserDetails() {
         User user = getUser();
 
-        return UserInfoResponse.builder()
+        return RegisterResponse.builder()
                 .username(user.getUsername())
                 .email(user.getEmail())
                 .firstname(user.getFirstname())
@@ -52,12 +52,31 @@ public class UserService {
 
     public void markUsersAsAdmins(List<String> usernames) {
         List<User> dbUsers = userRepository.findByUsernameIn(usernames);
-        Set<Role> roles = new HashSet<>();
-        roles.add(roleRepository.findByName(ERole.ROLE_ADMIN).get());
-        dbUsers.forEach(user -> user.setRoles(roles));
+        Role adminRole = roleRepository.findByName(ERole.ROLE_ADMIN).get();
+
+        dbUsers.forEach(user -> {
+            Set<Role> roles = user.getRoles();
+            roles.add(adminRole);
+            user.setRoles(roles);
+        });
+
+        Set<Role> adminRoles = new HashSet<>();
+        adminRoles.add(adminRole);
+        Role userRole = roleRepository.findByName(ERole.ROLE_USER).get();
+        List<User> dbAdmins = userRepository.findByRolesIn(adminRoles);
+        dbAdmins.forEach(admin -> {
+            if(!admin.getUsername().equals(getUser().getUsername())) {
+                Set<Role> roles = admin.getRoles();
+                roles.remove(adminRole);
+                roles.add(userRole);
+                admin.setRoles(roles);
+            }
+        });
+
         userRepository.saveAll(dbUsers);
 
         log.info(String.format("Users %s was marked as admin", usernames));
+        log.info(String.format("Users %s was marked as users", dbAdmins.stream().map(User::getUsername).collect(Collectors.toList())));
     }
 
     public List<String> getUsernames() {
@@ -70,11 +89,11 @@ public class UserService {
                 .filter(username -> !username.equals(authentication.getName())).collect(Collectors.toList());
     }
 
-    public List<String> getUsernames(Set<ERole> eRoles) {
-        Set<Role> roles = roleRepository.findByNameIn(eRoles);
+    public List<String> getUsernames(ERole eRole) {
+        Role role = roleRepository.findByName(eRole).get();
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return userRepository.findByRolesIn(roles).stream().map(User::getUsername)
+        return userRepository.findByRolesIn(Set.of(role)).stream().map(User::getUsername)
                 .filter(username -> !username.equals(authentication.getName())).collect(Collectors.toList());
     }
 }
