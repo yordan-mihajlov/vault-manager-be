@@ -114,7 +114,7 @@ public class ConfigControllerTest {
         User user = new User();
         when(userService.getUser()).thenReturn(user);
 
-        ResponseEntity<ConfigResponse> response = configController.getConfigs(configName);
+        ResponseEntity<ConfigResponse> response = configController.getConfiguration(configName);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         verify(configService).getConfiguration(configName, user);

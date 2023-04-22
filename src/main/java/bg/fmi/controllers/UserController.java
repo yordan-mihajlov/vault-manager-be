@@ -15,7 +15,6 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import java.util.List;
 
-@CrossOrigin(origins = "http://localhost:4200", maxAge = 3600, allowCredentials="true")
 @RestController
 @RequestMapping("/api/user")
 public class UserController {
@@ -41,13 +40,13 @@ public class UserController {
 
     @GetMapping("/usernames-by-role")
     @PreAuthorize("hasRole('MODERATOR') or hasRole('ADMIN')")
-    public ResponseEntity<List<String>> getUsernamesByRoles(@NotBlank @Param("roles") ERole role) {
+    public ResponseEntity<List<String>> getUsernamesByRole(@NotBlank @Param("roles") ERole role) {
         List<String> usernames = userService.getUsernames(role);
 
         return ResponseEntity.ok(usernames);
     }
 
-    @GetMapping("/user-details")
+    @GetMapping("/details")
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     public ResponseEntity<RegisterResponse> getUserDetails() {
         User user = userService.getUser();

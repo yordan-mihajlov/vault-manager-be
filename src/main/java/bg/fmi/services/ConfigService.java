@@ -8,14 +8,12 @@ import bg.fmi.payload.request.ConfigsRequest;
 import bg.fmi.payload.request.UsersRequest;
 import bg.fmi.payload.request.SystemConfigurationRequest;
 import bg.fmi.payload.response.ConfigResponse;
-import bg.fmi.repository.ConfigurationRepository;
-import bg.fmi.repository.SystemConfigurationRepository;
-import bg.fmi.repository.UserRepository;
+import bg.fmi.repositories.ConfigurationRepository;
+import bg.fmi.repositories.SystemConfigurationRepository;
+import bg.fmi.repositories.UserRepository;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.stream.Collectors;

@@ -1,4 +1,4 @@
-package bg.fmi.repository;
+package bg.fmi.repositories;
 
 import bg.fmi.models.SecretMessage;
 import bg.fmi.models.User;

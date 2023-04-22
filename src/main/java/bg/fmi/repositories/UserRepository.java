@@ -1,4 +1,4 @@
-package bg.fmi.repository;
+package bg.fmi.repositories;
 
 import java.util.List;
 import java.util.Optional;

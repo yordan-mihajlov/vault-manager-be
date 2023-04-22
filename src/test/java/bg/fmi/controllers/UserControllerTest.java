@@ -5,7 +5,6 @@ import static org.mockito.Mockito.*;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
 
 import bg.fmi.models.ERole;
 import bg.fmi.payload.request.MarkUsersAsAdminsRequest;
@@ -54,7 +53,7 @@ public class UserControllerTest {
         ERole role = ERole.ROLE_ADMIN;
         when(userService.getUsernames(role)).thenReturn(usernames);
 
-        ResponseEntity<List<String>> response = userController.getUsernamesByRoles(role);
+        ResponseEntity<List<String>> response = userController.getUsernamesByRole(role);
 
         assertEquals(usernames, response.getBody());
         assertEquals(200, response.getStatusCodeValue());

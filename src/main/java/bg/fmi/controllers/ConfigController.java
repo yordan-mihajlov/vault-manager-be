@@ -7,7 +7,6 @@ import bg.fmi.payload.response.ConfigResponse;
 import bg.fmi.services.ConfigService;
 import bg.fmi.services.FileService;
 import bg.fmi.services.UserService;
-import bg.fmi.vaultmanagerclient.component.VaultManagerProvider;
 import com.opencsv.exceptions.CsvException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
@@ -29,7 +28,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
-@CrossOrigin(origins = "http://localhost:4200", maxAge = 3600, allowCredentials="true")
 @RestController
 @RequestMapping("/api/config")
 public class ConfigController {
@@ -42,9 +40,6 @@ public class ConfigController {
 
     @Autowired
     private FileService fileService;
-
-    @Autowired
-    private VaultManagerProvider vaultManagerProvider;
 
     @GetMapping("/all")
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
@@ -107,25 +102,14 @@ public class ConfigController {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/get-configs")
+    @GetMapping("/get-data")
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN') or hasRole('SYSTEM')")
-    public ResponseEntity<ConfigResponse> getConfigs(@NotBlank @Param("configName") String configName) {
+    public ResponseEntity<ConfigResponse> getConfiguration(@NotBlank @Param("configName") String configName) {
 
         return ResponseEntity.ok(configService.getConfiguration(configName, userService.getUser()));
     }
 
-    @GetMapping("/get-all-configs")
-    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
-    public ResponseEntity<List<ConfigResponse>> getAllConfigs() {
-        List<ConfigResponse> configResponses = new ArrayList<>();
-
-        vaultManagerProvider.getProperties().forEach((s, stringStringMap) -> {
-            configResponses.add(ConfigResponse.builder().name(s).configurations(stringStringMap).build());
-                });
-        return ResponseEntity.ok(configResponses);
-    }
-
-    @PostMapping("/update-configs")
+    @PostMapping("/update")
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     public ResponseEntity<Void> updateConfigs(@Valid @RequestBody ConfigsRequest configsRequest) {
 
@@ -136,7 +120,7 @@ public class ConfigController {
 
     @GetMapping("/export")
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
-    public ResponseEntity<Resource> exportFile(@NotBlank @Param("configNames") String[] configNames) throws IOException {
+    public ResponseEntity<Resource> exportConfigs(@NotBlank @Param("configNames") String[] configNames) throws IOException {
 
         List<ConfigResponse> configResponses = new ArrayList<>();
 
@@ -162,7 +146,7 @@ public class ConfigController {
     @PostMapping("/import")
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @Transactional
-    public ResponseEntity<Void> importFile(@RequestParam("file") MultipartFile file) throws IOException, CsvException {
+    public ResponseEntity<Void> importConfigs(@RequestParam("file") MultipartFile file) throws IOException, CsvException {
         List<ConfigResponse> configResponses = fileService.importCSV(file);
         configResponses.forEach(configResponse -> {
             configService.create(SystemConfigurationRequest.builder()

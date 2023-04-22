@@ -33,12 +33,11 @@ import bg.fmi.models.Role;
 import bg.fmi.models.User;
 import bg.fmi.payload.request.LoginRequest;
 import bg.fmi.payload.request.SignupRequest;
-import bg.fmi.repository.RoleRepository;
-import bg.fmi.repository.UserRepository;
+import bg.fmi.repositories.RoleRepository;
+import bg.fmi.repositories.UserRepository;
 import bg.fmi.security.jwt.JwtUtils;
 import bg.fmi.security.services.UserDetailsImpl;
 
-@CrossOrigin(origins = "http://localhost:4200", maxAge = 3600, allowCredentials = "true")
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
