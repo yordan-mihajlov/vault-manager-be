@@ -73,6 +73,7 @@ class UserServiceTest {
     void testMarkUserAsAdmin() {
         when(userRepository.findByUsernameIn(List.of(username))).thenReturn(List.of(user));
         when(roleRepository.findByName(ERole.ROLE_ADMIN)).thenReturn(Optional.of(role));
+        when(roleRepository.findByName(ERole.ROLE_USER)).thenReturn(Optional.of(role));
 
         userService.markUsersAsAdmins(List.of(username));
 

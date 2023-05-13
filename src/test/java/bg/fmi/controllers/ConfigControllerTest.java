@@ -7,7 +7,6 @@ import bg.fmi.payload.request.UsersRequest;
 import bg.fmi.payload.response.ConfigResponse;
 import bg.fmi.services.ConfigService;
 import bg.fmi.services.UserService;
-import bg.fmi.vaultmanagerclient.component.VaultManagerProvider;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -35,8 +34,6 @@ public class ConfigControllerTest {
 
     @Mock
     private UserService userService;
-
-    private VaultManagerProvider vaultManagerProvider;
 
     @InjectMocks
     private ConfigController configController;

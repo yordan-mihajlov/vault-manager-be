@@ -2,7 +2,7 @@ INSERT INTO `roles` (`name`) VALUES
 ('ROLE_USER'),
 ('ROLE_MODERATOR'),
 ('ROLE_ADMIN'),
-('ROLE_SYSTEM');;
+('ROLE_SYSTEM');
 
 INSERT INTO `users` (`email`, `password`, `username`) VALUES
 ('user@user.user', '$2a$10$zQtnRCqqjCFs6zFliZVe6OVvBRKyNtJuQCPABXzi0ty8mQhPePX9W', 'user'),
